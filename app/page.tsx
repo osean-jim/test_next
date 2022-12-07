@@ -7,6 +7,8 @@ export default function Home() {
   const [ isMetaMaskConnected, setIsMetaMaskConnected ] = useState(false);
 
 
+
+
   const handleMetaMaskDisconnect = async () => {
     const isConnected = window.ethereum.isConnected();
     console.log(isConnected);
@@ -51,9 +53,11 @@ export default function Home() {
   return (
     <>
       <div style={{ padding: 30 }}>
-        <h1 className={"text-3xl font-bold underline"}>
-          Hello World
-        </h1>
+        <select className={'select select-bordered w-full max-w-xs'}>
+          <option>메타마스크</option>
+          <option>카이카스</option>
+        </select>
+
         <button className={"btn btn-active"} onClick={handleMetaMaskConnect}>메타마스크 연결</button>
         <br />
         <button className={"btn btn-active"} onClick={handleMetaMaskDisconnect}>메타마스크 비연결</button>
