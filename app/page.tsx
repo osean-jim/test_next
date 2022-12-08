@@ -10,20 +10,31 @@ export default function Home() {
     isMetaMaskConnected,
     isKaiKasInstalled,
     isKaiKasConnected,
+    setSelectedWallet,
+    selectedWallet,
   } = useContext(walletContext);
   const walletMap = {
     MetaMask: {
-      connect: () => {
+      connect: async () => {
         if (typeof window.ethereum !== "undefined") {
-          console.log("MetaMask Connect");
+          setSelectedWallet("MetaMask");
+          const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+          });
+          const account = accounts[0];
+          console.log(account);
         }
       },
     },
     KaiKas: {
-      connect: () => {
+      connect: async () => {
         if (typeof window.klaytn !== "undefined") {
-          window.klyatn.enable();
-          console.log("KaiKas Connect");
+          setSelectedWallet("KaiKas");
+          const accounts = await window.klaytn.request({
+            method: "klay_accounts",
+          });
+          const account = accounts[0];
+          console.log(account);
         }
       },
     },
@@ -60,20 +71,20 @@ export default function Home() {
 
   return (
     <>
-      <div style={{ padding: 30 }}>
-        <p>
-          {isMetaMaskInstalled
-            ? "MetaMask Installed"
-            : "MetaMask Not Installed"}
-        </p>
-        <p>{isKaiKasInstalled ? "KaiKas Installed" : "KaiKas Not Installed"}</p>
-        <select
-          className={"select select-bordered w-full max-w-xs"}
-          onChange={(e) => handleWalletChange(e.target.value as WalletList)}
-        >
-          <option value={"MetaMask"}>메타마스크</option>
-          <option value={"KaiKas"}>카이카스</option>
-        </select>
+      <div className={'p-20 bg-amber-600'}>
+        { selectedWallet}
+        <ul className={'menu bg-base-100 w-56 rounded-box'}>
+          <li>
+            <a onClick={() => walletMap['MetaMask'].connect()}>
+              MetaMask
+            </a>
+          </li>
+          <li>
+            <a onClick={() => walletMap['KaiKas'].connect()}>
+              KaiKas
+            </a>
+          </li>
+        </ul>
       </div>
     </>
   );

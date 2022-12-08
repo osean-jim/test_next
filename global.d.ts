@@ -4,3 +4,5 @@ declare global {
     klaytn: any;
   }
 }
+
+export {}

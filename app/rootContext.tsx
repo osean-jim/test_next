@@ -1,8 +1,8 @@
 import React, { createContext, useEffect } from "react";
-import detectEthereumProvider from "@metamask/detect-provider";
-import caver from "../libs/caver";
 
 interface WalletContext {
+  selectedWallet: string;
+  setSelectedWallet: React.Dispatch<React.SetStateAction<string>>;
   isMetaMaskInstalled: boolean;
   isMetaMaskConnected: boolean;
   currentMetaMaskAccount: string;
@@ -12,6 +12,8 @@ interface WalletContext {
 }
 
 export const walletContext = createContext<WalletContext>({
+  selectedWallet: "",
+  setSelectedWallet: () => {},
   isMetaMaskInstalled: false,
   isMetaMaskConnected: false,
   currentMetaMaskAccount: "",
@@ -21,6 +23,7 @@ export const walletContext = createContext<WalletContext>({
 });
 
 export const ProvideWallet = ({ children }: { children: React.ReactNode }) => {
+  const [selectedWallet, setSelectedWallet] = React.useState("");
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = React.useState(false);
   const [isMetaMaskConnected, setIsMetaMaskConnected] = React.useState(false);
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] =
@@ -28,31 +31,41 @@ export const ProvideWallet = ({ children }: { children: React.ReactNode }) => {
   const [isKaiKasInstalled, setIsKaiKasInstalled] = React.useState(false);
   const [isKaiKasConnected, setIsKaiKasConnected] = React.useState(false);
   const [currentKaiKasAccount, setCurrentKaiKasAccount] = React.useState("");
-  const [isInitialized, setIsInitialized] = React.useState(false);
+
+  const providerMetaMask = window.ethereum;
+  const providerKaiKas = window.klaytn
+
+  // MetaMask
+  useEffect(() => {
+    // MetaMask 설치여부 확인
+
+    if (providerMetaMask) {
+      setIsMetaMaskInstalled(true);
+    }
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      setIsInitialized(false);
-      console.log(caver);
-      // Wallet Check
-      const providerMetaMask = window.ethereum;
-      const providerKaiKas = window.klaytn;
-      // Case: MetaMask
-      if (providerMetaMask) {
-        setIsMetaMaskInstalled(true);
-        console.log("MetaMask is installed!");
-      }
-      // Case: KaiKas
-      if (providerKaiKas) {
-        setIsKaiKasInstalled(true);
-        console.log("KaiKas is installed!");
-      }
-      setIsInitialized(true);
-    })();
+    // MetaMask 계정 변경
   }, []);
+
+  // KaiKas
+  useEffect(() => {
+    // KaiKas 설치여부 확인
+    if (providerKaiKas) {
+      console.log(providerKaiKas);
+      setIsKaiKasInstalled(true);
+    }
+  }, []);
+
+  // useEffect(() => {
+  //
+  // },[])
+
   return (
     <walletContext.Provider
       value={{
+        selectedWallet,
+        setSelectedWallet,
         isMetaMaskInstalled,
         isMetaMaskConnected,
         currentMetaMaskAccount,
@@ -61,7 +74,7 @@ export const ProvideWallet = ({ children }: { children: React.ReactNode }) => {
         currentKaiKasAccount,
       }}
     >
-      {!isInitialized ? <div>Loading...</div> : children}
+      {children}
     </walletContext.Provider>
   );
 };
